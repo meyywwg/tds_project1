@@ -1,6 +1,6 @@
 # GitHub User and Repository Data Scraper
 
-This project involves scraping user and repository data from GitHub using the GitHub API. The primary goal is to gather data on developers in a specific location (Mumbai) who have a minimum number of followers. The data is stored in two CSV files: `users.csv` and `repositories.csv`.
+This project involves scraping user and repository data from GitHub using the GitHub API. The primary goal is to gather data on developers in Mumbai who have a minimum of 50 followers. The data is stored in two CSV files: `users.csv` and `repositories.csv`.
 
 ## Overview of the Scraping Process
 
@@ -49,15 +49,3 @@ This project involves scraping user and repository data from GitHub using the Gi
 5. **Rate Limiting**:
    - To avoid hitting API rate limits, a `time.sleep(1)` call is included after each request. This ensures that there is a one-second pause between requests.
 
-## Running the Script
-
-To execute the scraping process, simply run the script. It will create two CSV files (`users.csv` and `repositories.csv`) containing the scraped data. Ensure that you have the required permissions for the GitHub API and a valid API token.
-
-## Important Considerations
-
-- **API Rate Limits**: Be aware of GitHub's API rate limits, especially if you are scraping large amounts of data. You may need to manage your token usage to avoid being temporarily blocked.
-- **Data Quality**: The quality of the data depends on the completeness of the users' profiles on GitHub. Some fields may be missing, such as email addresses or bios.
-
-## Conclusion
-
-This script provides a simple and effective way to gather data on GitHub users and their repositories, focusing on developers in specific locations with a minimum follower count. It can be customized further for various parameters as needed.
