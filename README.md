@@ -1,3 +1,7 @@
+- Data on developers in Mumbai was collected using the GitHub API, gathering profiles with over 50 followers.
+- The analysis revealed that concise bios tend to correlate with higher follower counts, challenging the idea that longer bios attract more followers.
+- Developers should keep bios brief and list themselves as "hireable" to increase engagement and professional opportunities.
+
 # GitHub User and Repository Data Scraper
 
 This project involves scraping user and repository data from GitHub using the GitHub API. The primary goal is to gather data on developers in Mumbai who have a minimum of 50 followers. The data is stored in two CSV files: `users.csv` and `repositories.csv`.
