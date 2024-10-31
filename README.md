@@ -2,17 +2,14 @@ import requests
 import csv
 import time
 
-# GitHub API token
 GITHUB_TOKEN = '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'
 HEADERS = {"Authorization": f"token {GITHUB_TOKEN}"}
 
-# Helper function to clean up company names
 def clean_company_name(company):
     if company:
         company = company.strip().lstrip('@').upper()
     return company
 
-# Function to fetch users from the GitHub API
 def fetch_users(city="Mumbai", min_followers=50):
     users = []
     page = 1
@@ -51,7 +48,7 @@ def fetch_users(city="Mumbai", min_followers=50):
 
     return users
 
-# Function to fetch repositories for a user
+
 def fetch_repositories(user_login):
     repositories = []
     page = 1
@@ -87,14 +84,12 @@ def fetch_repositories(user_login):
 
     return repositories
 
-# Save users to CSV
 def save_users_to_csv(users, filename="users.csv"):
     with open(filename, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=users[0].keys())
         writer.writeheader()
         writer.writerows(users)
 
-# Save repositories to CSV
 def save_repositories_to_csv(repositories, filename="repositories.csv"):
     with open(filename, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=repositories[0].keys())
