@@ -60,7 +60,7 @@ There also exists a negative correlation between the  word count in the **bio** 
 
 Additionally, we observed that developers who indicated they were **hireable** were more likely to share their email addresses, hinting at a possible trend where more open communication facilitates networking and professional opportunities.
 
-##Actionable Recommendation for Developers Based on Findings
+## Actionable Recommendation for Developers Based on Findings
 
 Based on the analysis of GitHub user data, here are some actionable recommendations for developers looking to enhance their profiles and increase their followers:
 
