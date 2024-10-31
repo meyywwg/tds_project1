@@ -49,3 +49,15 @@ This project involves scraping user and repository data from GitHub using the Gi
 5. **Rate Limiting**:
    - To avoid hitting API rate limits, a `time.sleep(1)` call is included after each request. This ensures that there is a one-second pause between requests.
 
+
+## Interesting Findings
+
+After analyzing the data, one of the most surprising findings was that the programming language with highest number of stars per repository is TSQL.
+
+Alos there exists a very weak positive correlation between users' **number of repositories** and their **number of followers**. 
+
+There also exists a negative correlation between the  word count in the **bio** and the number of **followers**. Contrary to common belief that a longer, more detailed bio would attract more followers, the analysis revealed that users with shorter bios  actually garnered a higher average number of followers compared to those with extensive bios. 
+
+Additionally, we observed that developers who indicated they were **hireable** were more likely to share their email addresses, hinting at a possible trend where more open communication facilitates networking and professional opportunities.
+
+
