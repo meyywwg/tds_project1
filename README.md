@@ -1,116 +1,63 @@
-import requests
-import csv
-import time
+# GitHub User and Repository Data Scraper
 
-GITHUB_TOKEN = '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'
-HEADERS = {"Authorization": f"token {GITHUB_TOKEN}"}
+This project involves scraping user and repository data from GitHub using the GitHub API. The primary goal is to gather data on developers in a specific location (Mumbai) who have a minimum number of followers. The data is stored in two CSV files: `users.csv` and `repositories.csv`.
 
-def clean_company_name(company):
-    if company:
-        company = company.strip().lstrip('@').upper()
-    return company
+## Overview of the Scraping Process
 
-def fetch_users(city="Mumbai", min_followers=50):
-    users = []
-    page = 1
+1. **GitHub API Token**: 
+   - The script requires a GitHub API token for authentication. This token is included in the request headers to ensure authorized access to the API.
 
-    while True:
-        url = f"https://api.github.com/search/users?q=location:{city}+followers:>{min_followers}&page={page}&per_page=100"
-        response = requests.get(url, headers=HEADERS)
-        data = response.json()
+2. **Fetch Users**:
+   - The `fetch_users` function queries the GitHub API for users based in a specific location (default: Mumbai) who have more than a specified number of followers (default: 50).
+   - The API endpoint used is:
+     ```
+     https://api.github.com/search/users?q=location:Mumbai+followers:>50&page={page}&per_page=100
+     ```
+   - The function retrieves paginated results until there are no more users to fetch, appending each user’s data to a list. Important fields collected include:
+     - `login`: GitHub username
+     - `name`: User’s name
+     - `company`: User’s company (if provided)
+     - `location`: User’s location
+     - `email`: User’s email address (if provided)
+     - `hireable`: Hireable status
+     - `bio`: User’s biography
+     - `public_repos`: Number of public repositories
+     - `followers`: Number of followers
+     - `following`: Number of users the user is following
+     - `created_at`: Account creation date
 
-        # Break if no more results
-        if 'items' not in data or not data['items']:
-            break
+3. **Fetch User Repositories**:
+   - For each user retrieved, the `fetch_repositories` function is called to collect their repositories.
+   - The API endpoint for fetching repositories is:
+     ```
+     https://api.github.com/users/{user_login}/repos?per_page=100&page={page}
+     ```
+   - Similar to the user fetching process, this function also retrieves paginated results, collecting repository details such as:
+     - `login`: GitHub username
+     - `full_name`: Full name of the repository
+     - `created_at`: Creation date of the repository
+     - `stargazers_count`: Number of stars received
+     - `watchers_count`: Number of watchers
+     - `language`: Programming language used
+     - `has_projects`: Indicates if the repository has projects enabled
+     - `has_wiki`: Indicates if the repository has a wiki enabled
+     - `license_name`: Type of license for the repository (if any)
 
-        for user in data['items']:
-            # Get full user info
-            user_url = user['url']
-            user_response = requests.get(user_url, headers=HEADERS)
-            user_data = user_response.json()
+4. **Data Saving**:
+   - The collected user and repository data are saved to CSV files using the `save_users_to_csv` and `save_repositories_to_csv` functions, respectively. Each function writes the data into a specified CSV file with appropriate headers.
 
-            # Extract required fields
-            users.append({
-                'login': user_data['login'],
-                'name': user_data['name'],
-                'company': clean_company_name(user_data['company']),
-                'location': user_data['location'],
-                'email': user_data['email'],
-                'hireable': user_data['hireable'],
-                'bio': user_data['bio'],
-                'public_repos': user_data['public_repos'],
-                'followers': user_data['followers'],
-                'following': user_data['following'],
-                'created_at': user_data['created_at'],
-            })
-        page += 1
-        time.sleep(1)  # Avoid hitting API rate limits
+5. **Rate Limiting**:
+   - To avoid hitting API rate limits, a `time.sleep(1)` call is included after each request. This ensures that there is a one-second pause between requests.
 
-    return users
+## Running the Script
 
+To execute the scraping process, simply run the script. It will create two CSV files (`users.csv` and `repositories.csv`) containing the scraped data. Ensure that you have the required permissions for the GitHub API and a valid API token.
 
-def fetch_repositories(user_login):
-    repositories = []
-    page = 1
+## Important Considerations
 
-    while True:
-        url = f"https://api.github.com/users/{user_login}/repos?per_page=100&page={page}"
-        response = requests.get(url, headers=HEADERS)
-        repo_data = response.json()
+- **API Rate Limits**: Be aware of GitHub's API rate limits, especially if you are scraping large amounts of data. You may need to manage your token usage to avoid being temporarily blocked.
+- **Data Quality**: The quality of the data depends on the completeness of the users' profiles on GitHub. Some fields may be missing, such as email addresses or bios.
 
-        # Break if no more repositories
-        if not repo_data:
-            break
+## Conclusion
 
-        for repo in repo_data:
-            repositories.append({
-                'login': user_login,
-                'full_name': repo['full_name'],
-                'created_at': repo['created_at'],
-                'stargazers_count': repo['stargazers_count'],
-                'watchers_count': repo['watchers_count'],
-                'language': repo['language'],
-                'has_projects': repo['has_projects'],
-                'has_wiki': repo['has_wiki'],
-                'license_name': repo['license']['key'] if repo['license'] else None,
-            })
-
-        # If fewer than 100 repositories are returned, it means we're on the last page
-        if len(repo_data) < 100:
-            break
-
-        page += 1  # Move to the next page
-        time.sleep(1)  # Avoid hitting API rate limits
-
-    return repositories
-
-def save_users_to_csv(users, filename="users.csv"):
-    with open(filename, mode="w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=users[0].keys())
-        writer.writeheader()
-        writer.writerows(users)
-
-def save_repositories_to_csv(repositories, filename="repositories.csv"):
-    with open(filename, mode="w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=repositories[0].keys())
-        writer.writeheader()
-        writer.writerows(repositories)
-
-def main():
-    print("Fetching users...")
-    users = fetch_users()
-    save_users_to_csv(users)
-    print(f"Saved {len(users)} users to users.csv")
-
-    print("Fetching repositories...")
-    all_repositories = []
-    for user in users:
-        user_repos = fetch_repositories(user["login"])
-        all_repositories.extend(user_repos)
-        print(f"Fetched {len(user_repos)} repositories for user {user['login']}")
-
-    save_repositories_to_csv(all_repositories)
-    print(f"Saved {len(all_repositories)} repositories to repositories.csv")
-
-if __name__ == "__main__":
-    main()
+This script provides a simple and effective way to gather data on GitHub users and their repositories, focusing on developers in specific locations with a minimum follower count. It can be customized further for various parameters as needed.
